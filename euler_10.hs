@@ -1,5 +1,10 @@
-primes = sieve [2..]
-sieve (p:ps) = p : sieve [ x | x <- ps, mod x p /= 0 ]
+import Data.List.Ordered
+
+primesTo m = 2 : sieve [3,5..m]
+    where
+    sieve (p:xs)
+       | p*p > m   = p : xs
+       | otherwise = p : sieve (xs `minus` [p*p, p*p+2*p..])
 
 main :: IO()
-main = print(sum (takeWhile (<2000000) primes))
+main = print(sum (primesTo 2000000))
