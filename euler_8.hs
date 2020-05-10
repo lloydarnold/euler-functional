@@ -16,5 +16,5 @@ eulerDriver x m
             | otherwise          = eulerDriver (tail x) m
             where newMax = nextProduct x 0
 
--- eulerSolution :: (Integral a) => a
+eulerSolution :: Integer
 eulerSolution = eulerDriver (revListify num) 0
