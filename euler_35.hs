@@ -29,7 +29,6 @@ primesTo m = 2 : sieve [3,5..m]
        | p*p > m   = p : xs
        | otherwise = p : sieve (xs `minus` [p*p, p*p+2*p..])
 
-
 listToNumHlpr :: (Integral a) => [a] -> a -> a
 listToNumHlpr [] n = n
 listToNumHlpr (x:xs) n = listToNumHlpr xs $ n + x * ( powers 10 ( length' 0 xs) )
