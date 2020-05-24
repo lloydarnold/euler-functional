@@ -1,5 +1,10 @@
 import Data.List.Ordered
 
+worker n = group $ quicksort $ trialDiv n
+
+worker2 []    = 0
+worker2 x:xs  = doThatTing x + worker2 xs
+
 primesTo :: (Num a, Enum a, Ord a) => a -> [a]
 primesTo m = 2 : sieve [3,5..m]
     where
@@ -21,3 +26,10 @@ trialDivDr n (x:xs)
 -- trialDiv returns prime factors of number
 trialDiv :: Integer -> [Integer]
 trialDiv n = trialDivDr n $ relPrimes n
+
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x:xs) =
+    let smallerSorted = quicksort (filter (<=x) xs)
+        biggerSorted = quicksort (filter (>x) xs)
+    in  smallerSorted ++ [x] ++ biggerSorted
