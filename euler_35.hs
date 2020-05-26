@@ -1,14 +1,18 @@
 import Data.List.Ordered
 import Data.Array
+import Data.List
 
 main :: IO ()
 main = print( eulerSolution )
 
+exclude = [0,2,4,5,6,8]
+
 eulerSolution :: (Integral a) => a
-eulerSolution = length' 0 $ filter (circP) $ primesTo 1000000
+eulerSolution = 2 + ( length' 0 $ filter (circP) $ primesTo 1000000 )
 
 circP :: (Integral a) => a -> Bool
-circP n = circPWorker n $ nextRot n
+circP n = if ( intersect exclude $ listify n ) == [] then circPWorker n $ nextRot n
+                                                     else False
 
 circPWorker :: (Integral a) => a -> a -> Bool
 circPWorker n g
@@ -47,11 +51,11 @@ powers n i
        | even i = (powers n (i `div` 2)) * (powers n (i `div` 2))
        | odd i  = n * powers n (i-1)
 
-revListify :: (Integral a) => a -> [a]
+-- revListify :: (Integral a) => a -> [a]
 revListify 0 = []
-revListify n = n `mod` 10 : revListify (n `div` 10)
+revListify n =  fromIntegral (n `mod` 10) : revListify (n `div` 10)
 
-listify :: (Integral a) => a -> [a]
+--listify :: (Integral a) => a -> [a]
 listify n = reverse $ revListify n
 
 primeState :: Array Integer Integer
@@ -59,11 +63,11 @@ primeState = listArray (0,1000000) [arrayPopulate n | n <- [1..1000000]]
 
 arrayPopulate :: (Integral a, Num p) => a -> p
 arrayPopulate n
-          | isPrimeInit n = 0
-          | otherwise = 1
+          | isPrimeInit n == False = 0
+          | otherwise              = 1
 
 isPrime :: (Integral a) => a -> Bool
-isPrime n = integralToBool $ primeState ! ( fromIntegral n )
+isPrime n = integralToBool $ primeState ! ( fromIntegral n-1 )
 
 integralToBool :: (Integral a) => a -> Bool
 integralToBool 0 = False
