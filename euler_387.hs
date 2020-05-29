@@ -8,11 +8,19 @@ Let's call a Harshad number that, while recursively truncating the last digit, a
 
 import Data.Array
 
-limit = 100000
+limit = 100000000000000
+
+-- can't have rt trunc primes < 10
+eulerSolution :: Integer
+eulerSolution = sum $ filter (strongRtPrimeHarshad) $ filter (isPrime) [10..limit]
 
 digitSum :: (Integral a) => a -> a
 digitSum 0 = 0
 digitSum n = n `mod` 10 + digitSum (n `div` 10)
+
+strongRtPrimeHarshad :: Integer -> Bool
+strongRtPrimeHarshad n = strongHarshad g && rtHarshad g
+                        where g = rtTrunc n
 
 isHarshad :: Integer -> Bool
 isHarshad n = n `mod` digitSum n == 0
@@ -46,6 +54,7 @@ integralToBool 0 = False
 integralToBool 1 = True
 
 isPrimeInit :: (Integral a) => a -> Bool
+isPrimeInit 2 = True
 isPrimeInit k = if k > 1 then null [ x | x <- [2..isqrt k], k `mod` x == 0] else False
 
 -- returns nearest integer ABOVE square root
