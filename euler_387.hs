@@ -7,12 +7,21 @@ Let's call a Harshad number that, while recursively truncating the last digit, a
 --}
 
 import Data.Array
+import Data.List.Ordered
 
 limit = 100000000000000
+-- limit = 10000
 
 -- can't have rt trunc primes < 10
 eulerSolution :: Integer
 eulerSolution = sum $ filter (strongRtPrimeHarshad) $ filter (isPrime) [10..limit]
+
+primesTo :: (Num a, Enum a, Ord a) => a -> [a]
+primesTo m = 2 : sieve [3,5..m]
+    where
+    sieve (p:xs)
+       | p*p > m   = p : xs
+       | otherwise = p : sieve (xs `minus` [p*p, p*p+2*p..])
 
 digitSum :: (Integral a) => a -> a
 digitSum 0 = 0
@@ -24,6 +33,20 @@ strongRtPrimeHarshad n = strongHarshad g && rtHarshad g
 
 isHarshad :: Integer -> Bool
 isHarshad n = n `mod` digitSum n == 0
+
+primes = 2:([3..] ‘minus‘ composites)
+where
+composites = union [multiples p | p <− primes]
+multiples n = map (n*) [n..]
+(x:xs) ‘minus‘ (y:ys) | x < y = x:(xs ‘minus‘ (y:ys))
+| x == y = xs ‘minus‘ ys
+| x > y = (x:xs) ‘minus‘ ys
+union = foldr merge []
+where
+merge (x:xs) ys = x:merge’ xs ys
+merge’ (x:xs) (y:ys) | x < y = x:merge’ xs (y:ys)
+| x == y = x:merge’ xs ys
+| x > y = y:merge’ (x:xs) ys
 
 strongHarshad :: Integer -> Bool
 strongHarshad n = n `mod` x == 0 && isPrime ( n `div` x )
@@ -38,24 +61,9 @@ rtHarshad n
 rtTrunc :: Integer -> Integer
 rtTrunc n = n `div` 10
 
-primeState :: Array Integer Integer
-primeState = listArray (0,limit) [arrayPopulate n | n <- [1..limit]]
-
-arrayPopulate :: (Integral a, Num p) => a -> p
-arrayPopulate n
-          | isPrimeInit n == False = 0
-          | otherwise              = 1
-
-isPrime :: Integer -> Bool
-isPrime n = integralToBool $ primeState ! ( n-1 )
-
-integralToBool :: (Integral a) => a -> Bool
-integralToBool 0 = False
-integralToBool 1 = True
-
-isPrimeInit :: (Integral a) => a -> Bool
-isPrimeInit 2 = True
-isPrimeInit k = if k > 1 then null [ x | x <- [2..isqrt k], k `mod` x == 0] else False
+isPrime :: (Integral a) => a -> Bool
+isPrime 2 = True
+isPrime k = if k > 1 then null [ x | x <- [2..isqrt k], k `mod` x == 0] else False
 
 -- returns nearest integer ABOVE square root
 isqrt :: (Integral a) => a -> a
